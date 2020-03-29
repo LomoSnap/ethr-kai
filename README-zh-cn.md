@@ -4,7 +4,7 @@
 
 该版本增加了一个带`websocket`的WEB界面(见下图), 方便普通用户使用.
 
-![avatar](./ethr-kai-web-ui.png)
+![web-ui](./ethr-kai-web-ui.png)
 
 (以下是机翻, 懒得手工翻译了, 凑合着看吧)
 
@@ -128,7 +128,7 @@ ethr-kai -c localhost -t c -n 64
 
 ## 完整命令
 ```
-Ethr - A comprehensive network performance measurement tool.
+Ethr-改 (ethr-kai) - A comprehensive network performance measurement tool with web ui.
 Version: [VERSION: UNKNOWN]
 It supports 4 modes. Usage of each mode is described below:
 

@@ -1,10 +1,10 @@
 # Ethr-改　(ethr-kai) [![Build Status](https://travis-ci.org/karminski/ethr-kai.svg?branch=master)](https://travis-ci.org/karminski/ethr)
 
-[中文文档](./README-zh-cn.md)
+[中文文档在这里](./README-zh-cn.md)
 
-This repo fork from microsoft/ethr. This version modified by Karminski-牙医. A WEB UI with websocket was added in this branch.
+This repo fork from karminski/ethr-kai and modified by Karminski-牙医. A WEB UI with websocket was added in this fork.
 
-![avatar](./ethr-kai-web-ui.png)
+![web-ui](./ethr-kai-web-ui.png)
 
 Ethr is a cross platform network performance measurement tool written in golang. The goal of this project is to provide a native tool for comprehensive network performance measurements of bandwidth, connections/s, packets/s, latency, loss & jitter, across multiple protocols such as TCP, UDP, HTTP, HTTPS, and across multiple platforms such as Windows, Linux and other Unix systems.
 
@@ -18,6 +18,35 @@ Ethr is natively cross platform, thanks to golang, as compared to compiling via 
 # Download
 
 https://github.com/Microsoft/ethr/releases/latest
+
+# How to benchmark your network bandwidth
+
+We need two computer: A, B.
+
+Get released program from upper link .
+
+Run on machine A:
+
+```
+ethr-kai -s -web
+```
+
+And open your browser, type http://{machine A IP address}:8080/ the you can view the web page.
+
+Run on machine B:
+
+```
+ethr-kai -c {machine A IP address} -d {duration} -n {threads}
+```
+
+e.g.
+
+```
+ethr-kai -c 192.168.1.2 -d 602 -n 4
+```
+
+And when test start, you can receive test data from browser.
+
 
 # Installation
 
@@ -40,25 +69,25 @@ If Ethr is cloned inside of the `$GOPATH/src` tree, please make sure you invoke 
 
 Build image using command: 
 ```
-docker build -t microsoft/ethr .
+docker build -t karminski/ethr-kai .
 ```
 
 Make binary:
 
 **Linux**
 ```
-docker run -e GOOS=linux -v $(pwd):/out microsoft/ethr make build-docker
+docker run -e GOOS=linux -v $(pwd):/out karminski/ethr-kai make build-docker
 ```
 
 **Windows**
 
 ```
-docker run -e BINARY_NAME=ethr.exe -e GOOS=windows -v $(pwd):/out microsoft/ethr make build-docker
+docker run -e BINARY_NAME=ethr.exe -e GOOS=windows -v $(pwd):/out karminski/ethr-kai make build-docker
 ```
 
 **OS X**
 ```
-docker run -e BINARY_NAME=ethr -e GOOS=darwin -v $(pwd):/out microsoft/ethr make build-docker
+docker run -e BINARY_NAME=ethr-kai -e GOOS=darwin -v $(pwd):/out karminski/ethr-kai make build-docker
 ```
 
 ## Using go get
@@ -92,42 +121,52 @@ Upload the package to nuget.org.
 ## Simple Usage
 Help:
 ```
-ethr -h
+ethr-kai -h
 ```
 
 Server:
 ```
-ethr -s
+ethr-kai -s
 ```
 
 Server with Text UI:
 ```
-ethr -s -ui
+ethr-kai -s -ui
+```
+
+Server with WEB UI:
+```
+ethr-kai -s -web
 ```
 
 Client:
 ```
-ethr -c <server ip>
+ethr-kai -c <server ip>
 ```
 
 Examples:
 ```
 // Start server
-ethr -s
+ethr-kai -s
 
 // Start client for default (bandwidth) test measurement using 1 thread
-ethr -c localhost
+ethr-kai -c localhost
 
 // Start bandwidth test using 8 threads
-ethr -c localhost -n 8
+ethr-kai -c localhost -n 8
 
 // Start connections/s test using 64 threads
-ethr -c localhost -t c -n 64
+ethr-kai -c localhost -t c -n 64
 ```
 
 ## Complete Command Line
-### Common Parameters
 ```
+Ethr-改 (ethr-kai) - A comprehensive network performance measurement tool with web ui.
+Version: [VERSION: UNKNOWN]
+It supports 4 modes. Usage of each mode is described below:
+
+Common Parameters
+================================================================================
 	-h 
 		Help
 	-no 
@@ -144,13 +183,15 @@ ethr -c localhost -t c -n 64
 		Use only IP v4 version
 	-6 
 		Use only IP v6 version
-```
-### Server Parameters
-```
+
+Mode: Server
+================================================================================
 	-s 
 		Run in server mode.
 	-ui 
 		Show output in text UI.
+	-web 
+		Show output and charts on http port 8080.
 	-ports <k=v,...>
 		Use custom port numbers instead of default ones.
 		A comma separated list of key=value pair is used.
@@ -160,9 +201,9 @@ ethr -c localhost -t c -n 64
 		Control is used for control channel communication for ethr.
 		Note: Same configuration must be used on both client & server.
 		Default: 'control=8888,tcp=9999,udp=9999,http=9899,https=9799'
-```
-### Client Parameters
-```
+
+Mode: Client
+================================================================================
 	-c <server>
 		Run in client mode and connect to <server>.
 		Server is specified using name, FQDN or IP address.
@@ -177,9 +218,9 @@ ethr -c localhost -t c -n 64
 		0: Equal to number of CPUs
 		Default: 1
 	-ncs 
-		No Connection Stats would be printed if this flag is specified.
-		This is useful for running with large number of connections as
-		specified by -n option.
+		No per Connection Stats would be printed if this flag is specified.
+		This is useful to suppress verbose logging when large number of
+		connections are used as specified by -n option for Bandwidth tests.
 	-l <length>
 		Length of buffer to use (format: <num>[KB | MB | GB])
 		Only valid for Bandwidth tests. Max 1GB.
@@ -187,6 +228,9 @@ ethr -c localhost -t c -n 64
 	-p <protocol>
 		Protocol ("tcp", "udp", "http", "https", or "icmp")
 		Default: tcp
+	-ic 
+		Ignore Certificate is useful for HTTPS tests, for cases where a
+		middle box like a proxy is not able to supply a valid Ethr cert.
 	-ports <k=v,...>
 		Use custom port numbers instead of default ones.
 		A comma separated list of key=value pair is used.
@@ -206,9 +250,9 @@ ethr -c localhost -t c -n 64
 	-i <iterations>
 		Number of round trip iterations for each latency measurement.
 		Default: 1000
-```
-### External Server Parameters
-```
+
+Mode: External Server
+================================================================================
 	-m <mode>
 		'-m x' MUST be specified for external mode.
 	-s 
@@ -218,9 +262,9 @@ ethr -c localhost -t c -n 64
 		A comma separated list of key=value pair is used.
 		Key specifies the protocol, and value specifies the port.
 		Default: 'tcp=9999,http=9899,https=9799'
-```
-### External Client Mode
-```
+
+Mode: External Client
+================================================================================
 	-m <mode>
 		'-m x' MUST be specified for external mode.
 	-c <destination>
@@ -236,9 +280,9 @@ ethr -c localhost -t c -n 64
 		0: Equal to number of CPUs
 		Default: 1
 	-ncs 
-		No Connection Stats would be printed if this flag is specified.
-		This is useful for running with large number of connections as
-		specified by -n option.
+		No per Connection Stats would be printed if this flag is specified.
+		This is useful to suppress verbose logging when large number of
+		connections are used as specified by -n option for Bandwidth tests.
 	-l <length>
 		Length of buffer to use (format: <num>[KB | MB | GB])
 		Only valid for Bandwidth tests. Max 1GB.
@@ -251,11 +295,12 @@ ethr -c localhost -t c -n 64
 		b: Bandwidth
 		c: Connections/s or Requests/s
 		cl: TCP connection setup latency
-		Default: b - Bandwidth measurement.
+		Default: cl - TCP connection setup latency.
 	-g <gap>
 		Time interval between successive measurements (format: <num>[ms | s | m | h]
 		0: No gap
 		Default: 1s
+
 ```
 
 # Status
