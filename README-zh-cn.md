@@ -59,9 +59,10 @@ ethr-kai -c 192.168.1.2 -d 602 -n 4
 
 # 从源代码构建
 
-为了便捷, 我直接将第三方依赖集成到了vendor文件夹里面. 直接运行:
+先获取依赖, 然后编译:
 
 ```
+make fetch-dependency
 make build-with-local-vendor
 ```
 

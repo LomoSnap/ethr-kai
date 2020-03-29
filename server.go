@@ -34,19 +34,6 @@ var gCert []byte
 var hub *Hub 
 
 func runServer(testParam EthrTestParam, serverParam ethrServerParam) {
-	// websocket hub
-	hub = newHub()
-	go hub.run()
-	http.HandleFunc("/", serveStaticFile)
-	http.HandleFunc("/chart.min.js", serveStaticFile)
-	http.HandleFunc("/main.css", serveStaticFile)
-	http.HandleFunc("/utils.js", serveStaticFile)
-	http.HandleFunc("/gauge.js", serveStaticFile)
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		serveWs(hub, w, r)
-	})
-	go http.ListenAndServe(":8080", nil)
-	// origin
 	defer stopStatsTimer()
 	initServer(serverParam.showUI)
 	showAcceptedIPVersion()
@@ -56,7 +43,7 @@ func runServer(testParam EthrTestParam, serverParam ethrServerParam) {
 	runHTTPBandwidthServer()
 	runHTTPSBandwidthServer()
 	runHTTPLatencyServer()
-	runWEBUIServer()
+	runWEBUIServer(serverParam.showWEBUI)
 	l := runControlChannel()
 	defer l.Close()
 	startStatsTimer()
@@ -501,25 +488,27 @@ func runHTTPSBandwidthServer() {
 	go runHTTPServer(tl, sm)
 }
 
-func runWEBUIServer() {
-	return 
-	// sm := http.NewServeMux()
-	// sm.HandleFunc("/", runWEBUIHandlerWrapper)
-	// l, err := net.Listen(tcp(ipVer), ":"+webUIPort)
-	// if err != nil {
-	// 	ui.printErr("runWEBUIServer: unable to start WEB UI HTTP server. Error in listening on socket: %v", err)
-	// 	return
-	// }
-	// ui.printMsg("Listening on " + webUIPort + " for HTTP WEB UI access")
-	// go runHTTPServer(tcpKeepAliveListener{l.(*net.TCPListener)}, sm)
+func runWEBUIServer(runWEBUIServer bool) {
+	// websocket hub
+	hub = newHub()
+	go hub.run()
+	if !runWEBUIServer {
+		return
+	}
+	ui.printMsg("Listening on " + webUIPort + " for WEB UI")
+	http.HandleFunc("/", serveStaticFile)
+	http.HandleFunc("/chart.min.js", serveStaticFile)
+	http.HandleFunc("/main.css", serveStaticFile)
+	http.HandleFunc("/utils.js", serveStaticFile)
+	http.HandleFunc("/gauge.js", serveStaticFile)
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		serveWs(hub, w, r)
+	})
+	go http.ListenAndServe(":8080", nil)
 }
 
 func runHTTPSBandwidthHandler(w http.ResponseWriter, r *http.Request) {
 	runHTTPandHTTPSHandler(w, r, HTTPS, Bandwidth)
-}
-
-func runWEBUIHandlerWrapper(w http.ResponseWriter, r *http.Request) {
-	runWEBUIHandler(w, r, HTTPS, Bandwidth)
 }
 
 func runHTTPServer(l net.Listener, handler http.Handler) error {
@@ -651,36 +640,6 @@ func serveStaticFile(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.ServeFile(w, r, "static/index.html")
 	}
-}
-
-
-
-
-/**
- * runWEBUIHandler run web ui
- */
-func runWEBUIHandler(w http.ResponseWriter, r *http.Request, p EthrProtocol, testType EthrTestType) {
-
-	
-	return 
-	// original
-	// _, err := ioutil.ReadAll(r.Body)
-	// if err != nil {
-	// 	ui.printDbg("Error reading HTTP body: %v", err)
-	// 	http.Error(w, err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
-	// gSessionLock.RLock()
-	// defer gSessionLock.RUnlock()
-	// var results []string
-	// for _, k := range gSessionKeys {
-	// 	v := gSessions[k]
-	// 	results =  getTestResults(v, TCP, 1)
-	// }
-	// for _, v := range results {
-	// 	w.Write([]byte("data:"+v))
-	// }
-
 }
 
 func runHTTPLatencyServer() {
