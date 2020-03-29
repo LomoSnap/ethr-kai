@@ -628,18 +628,7 @@ func serveStaticFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	url := r.URL.Path
-	if url == "/chart.min.js" {
-		http.ServeFile(w, r, "static/chart.min.js")
-	}else if url == "/gauge.js" {
-		http.ServeFile(w, r, "static/gauge.js")
-	}else if url == "/main.css" {
-		http.ServeFile(w, r, "static/main.css")
-	}else if url == "/utils.js" {
-		http.ServeFile(w, r, "static/utils.js")
-	} else {
-		http.ServeFile(w, r, "static/index.html")
-	}
+	w.Write([]byte(webUIPage))
 }
 
 func runHTTPLatencyServer() {
