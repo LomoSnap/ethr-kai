@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/microsoft/ethr/internal/cmd"
-	"github.com/microsoft/ethr/internal/ethrLog"
+	"github.com/microsoft/ethr-kai/internal/cmd"
+	"github.com/microsoft/ethr-kai/internal/ethrLog"
 )
 
 const defaultLogFileName = "./ethrs.log for server, ./ethrc.log for client"
@@ -53,6 +53,7 @@ func main() {
 	noOutput := flag.Bool("no", false, "")
 	duration := flag.Duration("d", 10*time.Second, "")
 	showUI := flag.Bool("ui", false, "")
+	showWEBUI := flag.Bool("web", false, "")
 	rttCount := flag.Int("i", 1000, "")
 	portStr := flag.String("ports", "", "")
 	modeStr := flag.String("m", "", "")
@@ -225,7 +226,7 @@ func main() {
 	}
 
 	clientParam := ethrClientParam{*duration, *gap}
-	serverParam := ethrServerParam{*showUI}
+	serverParam := ethrServerParam{*showUI, *showWEBUI}
 
 	switch mode {
 	case ethrModeServer:

@@ -12,7 +12,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/microsoft/ethr/internal/ethrLog"
+	"github.com/microsoft/ethr-kai/internal/ethrLog"
 )
 
 func runXServer(testParam EthrTestParam, serverParam ethrServerParam) {

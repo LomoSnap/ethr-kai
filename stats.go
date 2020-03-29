@@ -11,7 +11,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/microsoft/ethr/internal/stats"
+	"github.com/microsoft/ethr-kai/internal/stats"
 )
 
 func getNetworkStats() (stats.EthrNetStats, error) {
@@ -102,6 +102,7 @@ func timeToNextTick() time.Duration {
 	return time.Until(nextTick)
 }
 
+// emit stats info to configured ui
 func emitStats() {
 	d := time.Since(lastStatsTime)
 	lastStatsTime = time.Now()
@@ -132,3 +133,4 @@ func emitTestResults(s uint64) {
 		ui.emitTestResult(v, ICMP, s)
 	}
 }
+

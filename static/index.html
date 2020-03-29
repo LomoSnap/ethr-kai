@@ -1,0 +1,475 @@
+<html>
+<head>
+<script src="gauge.js"></script>
+<script src="chart.min.js"></script>
+<script src="utils.js"></script>
+<link href="main.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<!-- Current speed -->
+<div id="gauge-panel">
+    <canvas id="gauge-1" class="gauge-canvas"></canvas>
+    <div id="gauge-1-text">
+        <div id="gauge-1-num">0</div>
+        <div id="gauge-1-unit">Kbps</div>
+    </div>
+    <canvas id="gauge-2" class="gauge-canvas"></canvas>
+    <div id="gauge-2-text">
+        <div id="gauge-2-num">0</div>
+        <div id="gauge-2-unit">Mbps</div>
+    </div>
+
+    <canvas id="gauge-3" class="gauge-canvas"></canvas>
+    <canvas id="gauge-3-1" class="gauge-canvas"></canvas>
+    <canvas id="gauge-3-2" class="gauge-canvas"></canvas>    
+    <div id="gauge-3-text">
+        <div id="gauge-3-num">0</div>
+        <div id="gauge-3-unit">Gbps</div>
+    </div>
+    
+    <canvas id="gauge-4" class="gauge-canvas"></canvas>
+    <div id="gauge-4-text">
+        <div id="gauge-4-num">0</div>
+        <div id="gauge-4-unit">Tbps</div>
+    </div>
+    
+    <div id="gauge-3-desc">1000</div>
+    <div id="gauge-3-1-desc">100</div>
+    <div id="gauge-3-2-desc">10</div>
+    <div id="gauge-panel-text">Current Speed</div>
+</div>
+
+<!-- Speed Chart -->
+<div id="chart-panel-text">Bandwidth</div>
+
+<div id="chart-panel">
+    <div id="chart-panel-inner">
+    <canvas id="canvas"></canvas>
+    </div>
+</div>
+
+<!-- Speed info -->
+<div id="info-panel-text">Server Info</div>
+
+<div id="info-panel">
+    <div id="log">
+        <div class="logRemoteAddress">[RemoteAddress - Protocol]</div> <div class="logBits"> Bits/s </div> <div class="logConn"> Conn/s</div> <div class="logPkt"> Pkt/s </div> <div class="logLatency"> Latency</div>
+</div>
+<form id="form">
+</form>
+</div>
+
+<div id="footer"><a href="https://github.com/karminski/ethr-kai">Ethr-改 (ethr-kai)</a> base on <a href="https://github.com/microsoft/ethr-kai">microsoft/ethr</a> with WEB UI. This unofficial version modified by <a href="https://github.com/karminski">Karminski-牙医</a>.</div>
+
+<!-- scripts for Gauge -->
+<script type="text/javascript">
+    var optsGauge1 = {
+        angle: 1.2, // The span of the gauge arc
+        lineWidth: 0.03, // The line thickness
+        radiusScale: 1, // Relative radius
+        pointer: {
+            length: 0.6, // // Relative to gauge radius
+            strokeWidth: 0.035, // The thickness
+            color: '#000000' // Fill color
+        },
+        limitMax: false,     // If false, max value increases automatically if value > maxValue
+        limitMin: false,     // If true, the min value of the gauge will be fixed
+        colorStart: '#67B7DC',   // Colors
+        colorStop: '#67B7DC',    // just experiment with them
+        strokeColor: '#EBEBEB',  // to see which ones work best for you
+        generateGradient: true,
+        highDpiSupport: true,     // High resolution support
+    };
+    var optsGauge2 = {
+        angle: 1.2, // The span of the gauge arc
+        lineWidth: 0.03, // The line thickness
+        radiusScale: 1, // Relative radius
+        pointer: {
+            length: 0.6, // // Relative to gauge radius
+            strokeWidth: 0.035, // The thickness
+            color: '#000000' // Fill color
+        },
+        limitMax: false,     // If false, max value increases automatically if value > maxValue
+        limitMin: false,     // If true, the min value of the gauge will be fixed
+        colorStart: '#6794DC',   // Colors
+        colorStop: '#6794DC',    // just experiment with them
+        strokeColor: '#EBEBEB',  // to see which ones work best for you
+        generateGradient: true,
+        highDpiSupport: true,     // High resolution support
+    };
+    var optsGauge3 = {
+        angle: 1.2, // The span of the gauge arc
+        lineWidth: 0.03, // The line thickness
+        radiusScale: 1, // Relative radius
+        pointer: {
+            length: 0.6, // // Relative to gauge radius
+            strokeWidth: 0.035, // The thickness
+            color: '#000000' // Fill color
+        },
+        limitMax: false,     // If false, max value increases automatically if value > maxValue
+        limitMin: false,     // If true, the min value of the gauge will be fixed
+        colorStart: '#A367DC',   // Colors
+        colorStop: '#A367DC',    // just experiment with them
+        strokeColor: '#EBEBEB',  // to see which ones work best for you
+        generateGradient: true,
+        highDpiSupport: true,     // High resolution support
+    };
+    var optsGauge3_1 = {
+        angle: 1.2, // The span of the gauge arc
+        lineWidth: 0.03, // The line thickness
+        radiusScale: 0.84, // Relative radius
+        pointer: {
+            length: 0.6, // // Relative to gauge radius
+            strokeWidth: 0.035, // The thickness
+            color: '#000000' // Fill color
+        },
+        limitMax: false,     // If false, max value increases automatically if value > maxValue
+        limitMin: false,     // If true, the min value of the gauge will be fixed
+        colorStart: '#8067DC',   // Colors
+        colorStop: '#8067DC',    // just experiment with them
+        strokeColor: '#EBEBEB',  // to see which ones work best for you
+        generateGradient: true,
+        highDpiSupport: true,     // High resolution support
+    };
+    var optsGauge3_2 = {
+        angle: 1.2, // The span of the gauge arc
+        lineWidth: 0.03, // The line thickness
+        radiusScale: 0.68, // Relative radius
+        pointer: {
+            length: 0.6, // // Relative to gauge radius
+            strokeWidth: 0.035, // The thickness
+            color: '#000000' // Fill color
+        },
+        limitMax: false,     // If false, max value increases automatically if value > maxValue
+        limitMin: false,     // If true, the min value of the gauge will be fixed
+        colorStart: '#6771DC',   // Colors
+        colorStop: '#6771DC',    // just experiment with them
+        strokeColor: '#EBEBEB',  // to see which ones work best for you
+        generateGradient: true,
+        highDpiSupport: true,     // High resolution support
+    };
+    var optsGauge4 = {
+        angle: 1.2, // The span of the gauge arc
+        lineWidth: 0.03, // The line thickness
+        radiusScale: 1, // Relative radius
+        pointer: {
+            length: 0.6, // // Relative to gauge radius
+            strokeWidth: 0.035, // The thickness
+            color: '#000000' // Fill color
+        },
+        limitMax: false,     // If false, max value increases automatically if value > maxValue
+        limitMin: false,     // If true, the min value of the gauge will be fixed
+        colorStart: '#C767DC',   // Colors
+        colorStop: '#C767DC',    // just experiment with them
+        strokeColor: '#EBEBEB',  // to see which ones work best for you
+        generateGradient: true,
+        highDpiSupport: true,     // High resolution support
+    };
+
+   
+
+// 163,103,220  A367DC
+// 199,103,220  C767DC
+
+    // chart config
+    var config = {
+        type: 'line',
+        data: {
+            labels: ['0'], // tik
+            datasets: []
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: false,
+                text: 'Speed Record'
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Time'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Gbps'
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                    }
+                }]
+            }
+        }
+    };
+        
+    // gauge-1
+    var target = document.getElementById('gauge-1'); // your canvas element
+    var gauge1 = new Donut(target).setOptions(optsGauge1); // create  gauge
+    gauge1.maxValue = 1000; // set max gauge value
+    gauge1.setMinValue(0);  // Prefer setter over gauge.minValue = 0
+    gauge1.animationSpeed = 256; // set animation speed (32 is default value)
+    gauge1.set(0); // set actual value
+    // gauge-2
+    var target = document.getElementById('gauge-2'); 
+    var gauge2 = new Donut(target).setOptions(optsGauge2); 
+    gauge2.maxValue = 1000; 
+    gauge2.setMinValue(0);  
+    gauge2.animationSpeed = 256; 
+    gauge2.set(0); 
+    // gauge-3
+    var target = document.getElementById('gauge-3'); 
+    var gauge3 = new Donut(target).setOptions(optsGauge3); 
+    gauge3.maxValue = 1000; 
+    gauge3.setMinValue(0);  
+    gauge3.animationSpeed = 256; 
+    gauge3.set(0); 
+    // gauge-4
+    var target = document.getElementById('gauge-4'); 
+    var gauge4 = new Donut(target).setOptions(optsGauge4); 
+    gauge4.maxValue = 1000; 
+    gauge4.setMinValue(0);  
+    gauge4.animationSpeed = 256; 
+    gauge4.set(0); 
+    // gauge-3-1
+    var target = document.getElementById('gauge-3-1'); 
+    var gauge31 = new Donut(target).setOptions(optsGauge3_1); 
+    gauge31.maxValue = 100; 
+    gauge31.setMinValue(0);  
+    gauge31.animationSpeed = 256; 
+    gauge31.set(0); 
+    // gauge-3-2
+    var target = document.getElementById('gauge-3-2');
+    var gauge32 = new Donut(target).setOptions(optsGauge3_2); 
+    gauge32.maxValue = 10; 
+    gauge32.setMinValue(0);  
+    gauge32.animationSpeed = 256; 
+    gauge32.set(0); 
+
+    // set gauge method
+    var setGaugeBySerial = function(gaugeSerial, reading){
+        readingNum = 0;
+        // set reading 
+        if(reading == "FULL"){
+            readingNum = 1000;
+        }else{
+            readingNum = reading;
+        }
+        // set gauge
+        if(gaugeSerial == 1){
+            gauge1.set(readingNum);
+        } else if (gaugeSerial == 2){
+            gauge2.set(readingNum);
+        } else if (gaugeSerial == 3){
+            gauge3.set(readingNum);
+        } else if (gaugeSerial == 4){
+            gauge4.set(readingNum);
+        } else if (gaugeSerial == 31) {
+            if (reading > 100) {
+                readingNum = 100
+            }
+            gauge31.set(readingNum);
+        } else if (gaugeSerial == 32) {
+            if (reading > 10) {
+                readingNum = 10
+            }
+            gauge32.set(readingNum);
+        } 
+    }
+    var setGaugeReadingBySerial = function(gaugeReadingSerial, reading){
+        if(gaugeReadingSerial == 1){
+            document.getElementById('gauge-1-num').innerHTML = reading;
+        } else if (gaugeReadingSerial == 2){
+            document.getElementById('gauge-2-num').innerHTML = reading;
+        } else if (gaugeReadingSerial == 3) {
+            document.getElementById('gauge-3-num').innerHTML = reading;
+        } else if (gaugeReadingSerial == 4) {
+            document.getElementById('gauge-4-num').innerHTML = reading;
+        }
+    }
+    // set chart method
+    var ipSerialMap = {};
+    var ipDataCountMap = {};
+    var maxLableCounter = 0;
+    var addToChart = function(ip, readingGbps, dataSerial){
+        // if key not exists, init chart
+        var keys = Object.keys(ipSerialMap);
+        if(keys.length == 0){
+            initChart(ip, readingGbps)
+        }else if(!ipSerialMap.hasOwnProperty(ip)){
+            initChart(ip, readingGbps)
+        }
+
+        // init ipDataCountMap
+        if (!ipDataCountMap.hasOwnProperty(ip)) {
+            ipDataCountMap[ip] = 0
+        }
+        ipDataCountMap[ip] ++
+
+        // add chart data
+        var ipSerial = 0
+        var paddingCount = 0
+        ipSerial = ipSerialMap[ip]
+
+        // extend lable or padding data
+        if(ipDataCountMap[ip] > maxLableCounter){
+            // extend x axis when dataSerial > now lable serial
+            config.data.labels.push(dataSerial);
+            maxLableCounter++;
+        } else if (ipDataCountMap[ip] < maxLableCounter){
+            // if not, padding 0
+            paddingCount = maxLableCounter - ipDataCountMap[ip]
+            for (let i = 0; i < paddingCount; i++) {
+               config.data.datasets[ipSerial].data.push(0);
+               ipDataCountMap[ip]++
+            }
+        }
+        // push data
+        config.data.datasets[ipSerial].data.push(readingGbps);
+        window.myLine.update();
+    }
+    var initChart = function(ip){
+        var keys = Object.keys(ipSerialMap)
+        var length = keys.length;
+        ipSerialMap[ip] = length
+        // init chart
+        var colorNames = Object.keys(window.chartColors);
+        var colorName = colorNames[config.data.datasets.length % colorNames.length];
+        var newColor = window.chartColors[colorName];
+        var newDataset = {
+            label: ip,
+            backgroundColor: newColor,
+            borderColor: newColor,
+            data: [],
+            fill: false
+        };
+        config.data.datasets.push(newDataset);
+        window.myLine.update();
+    }
+
+</script>
+
+
+
+<!-- script for info -->
+<script type="text/javascript">
+var receivedServerData;
+window.onload = function () {
+    // load chart
+    var ctx = document.getElementById('canvas').getContext('2d');
+    window.myLine = new Chart(ctx, config);
+    // load websocket
+    var conn;
+    var msg = document.getElementById("msg");
+    var log = document.getElementById("log");
+    function appendLog(item) {
+        var doScroll = log.scrollTop > log.scrollHeight - log.clientHeight - 1;
+        log.appendChild(item);
+        if (doScroll) {
+            log.scrollTop = log.scrollHeight - log.clientHeight;
+        }
+    }
+    function appeldServerLog(receivedServerData){
+        var doScroll = log.scrollTop > log.scrollHeight - log.clientHeight - 1;
+
+        var logRemoteAddress = document.createElement("div");
+        logRemoteAddress.className="logRemoteAddress"
+        logRemoteAddress.innerText = "["+receivedServerData.RemoteAddress+"]";
+        log.appendChild(logRemoteAddress);
+
+        var logBits = document.createElement("div");
+        logBits.className = "logBits";
+        if (receivedServerData.BitsPerSecond == "") {
+            receivedServerData.BitsPerSecond = "0";
+        }
+        logBits.innerText = receivedServerData.BitsPerSecond;
+        log.appendChild(logBits);
+        var logConn = document.createElement("div");
+        logConn.className = "logConn"
+        if (receivedServerData.ConnectionPerSecond == "") {
+            receivedServerData.ConnectionPerSecond = "0";
+        }
+        logConn.innerText = receivedServerData.ConnectionPerSecond;
+        log.appendChild(logConn);
+        var logPkt = document.createElement("div");
+        logPkt.className = "logPkt"
+        if (receivedServerData.ParcketPerSecond == "") {
+            receivedServerData.ParcketPerSecond = "0";
+        }
+        logPkt.innerText = receivedServerData.ParcketPerSecond;
+        log.appendChild(logPkt);
+        var logLatency = document.createElement("div");
+        logLatency.className = "logLatency"
+        if (receivedServerData.Latency == "") {
+            receivedServerData.Latency = "0";
+        }
+        logLatency.innerText = receivedServerData.Latency;
+        log.appendChild(logLatency);
+        var br = document.createElement("br");
+        log.appendChild(br);
+
+        if (doScroll) {
+            log.scrollTop = log.scrollHeight - log.clientHeight;
+        }
+    }
+    if (window["WebSocket"]) {
+        conn = new WebSocket("ws://" + document.location.host + "/ws");
+        conn.onclose = function (evt) {
+            var item = document.createElement("div");
+            item.innerHTML = "<b>Connection closed.</b>";
+            appendLog(item);
+        };
+        conn.onmessage = function (evt) {
+            var messages = evt.data.split('\n');
+            for (var i = 0; i < messages.length; i++) {
+                receivedServerData = JSON.parse(messages[i]);
+                var log = "[" + receivedServerData.RemoteAddress + "]" + receivedServerData.Protocol + receivedServerData.BitsPerSecond + receivedServerData.ConnectionPerSecond + receivedServerData.ParcketPerSecond + receivedServerData.Latency;
+                var item = document.createElement("div");
+                item.innerText = log;
+                appeldServerLog(receivedServerData);
+                // set sum
+                if(receivedServerData.IsSumResult){
+                    setGaugeBySerial(1, receivedServerData.kbps)
+                    setGaugeBySerial(2, receivedServerData.mbps)
+                    setGaugeBySerial(3, receivedServerData.gbps)
+                    setGaugeBySerial(4, receivedServerData.tbps)
+                    setGaugeBySerial(31, receivedServerData.gbps)
+                    setGaugeBySerial(32, receivedServerData.gbps)
+                    setGaugeReadingBySerial(1, receivedServerData.kbps)
+                    setGaugeReadingBySerial(2, receivedServerData.mbps)
+                    setGaugeReadingBySerial(3, receivedServerData.gbps)
+                    setGaugeReadingBySerial(4, receivedServerData.tbps)
+                    setGaugeReadingBySerial(31, receivedServerData.gbps)
+                    setGaugeReadingBySerial(32, receivedServerData.gbps)
+                }
+                // set chart
+                addToChart(receivedServerData.RemoteAddress, receivedServerData.gbps, receivedServerData.tik);
+            }
+        };
+    } else {
+        var item = document.createElement("div");
+        item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
+        appendLog(item);
+    }
+};
+</script>
+
+</body>
+</html>
+
+<!-- remote data sample 
+
+{"RemoteAddress": "10.0.0.1","tik":"2","Protocol": "TCP","BitsPerSecond":"12G","ConnectionPerSecond":"0","ParcketPerSecond":"0","Latency":"0","kbps":"FULL","mbps":"FULL","gbps":"129.25","tbps":"12"}
+
+-->

@@ -12,7 +12,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/microsoft/ethr/utils"
+	"github.com/microsoft/ethr-kai/utils"
 )
 
 func runXClient(testParam EthrTestParam, clientParam ethrClientParam, server string) {

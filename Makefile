@@ -8,7 +8,7 @@
 GO_BIN ?= go
 GO_LINT ?= golint
 GO_FMT ?= gofmt
-BINARY_NAME ?= ethr
+BINARY_NAME ?= ethr-kai
 
 .PHONY: fmt
 fmt:
@@ -29,4 +29,11 @@ build:
 lint:
 	$(GO_LINT) .
 
+fetch-dependency:
+	$(GO_BIN) mod vendor .
+
+build-with-local-vendor:
+	$(GO_BIN) build -mod=vendor -o $(BINARY_NAME) .
+
 .DEFAULT_GOAL := build
+

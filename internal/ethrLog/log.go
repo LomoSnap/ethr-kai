@@ -12,7 +12,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/microsoft/ethr/utils"
+	"github.com/microsoft/ethr-kai/utils"
 )
 
 type logMessage struct {

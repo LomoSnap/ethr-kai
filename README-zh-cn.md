@@ -1,133 +1,138 @@
 # Ethr-改　(ethr-kai) [![Build Status](https://travis-ci.org/karminski/ethr-kai.svg?branch=master)](https://travis-ci.org/karminski/ethr)
 
-[中文文档](./README-zh-cn.md)
+[README(English)](./README.md)
 
-This repo fork from microsoft/ethr. This version modified by Karminski-牙医. A WEB UI with websocket was added in this branch.
+该版本增加了一个带`websocket`的WEB界面(见下图), 方便普通用户使用.
 
 ![avatar](./ethr-kai-web-ui.png)
 
-Ethr is a cross platform network performance measurement tool written in golang. The goal of this project is to provide a native tool for comprehensive network performance measurements of bandwidth, connections/s, packets/s, latency, loss & jitter, across multiple protocols such as TCP, UDP, HTTP, HTTPS, and across multiple platforms such as Windows, Linux and other Unix systems.
+(以下是机翻, 懒得手工翻译了, 凑合着看吧)
+
+Ethr是一个用golang编写的跨平台网络性能测量工具。本项目的目标是提供一个本机工具，用于跨多个协议(如TCP、UDP、HTTP、HTTPS)和跨多个平台(如Windows、Linux和其他Unix系统)全面测量网络性能，包括带宽、连接/s、包/s、延迟、损耗和抖动。
+
+Ethr从现有的开源网络性能工具中获得灵感，并以这些想法为基础。对于带宽测量，它类似于iPerf3，用于TCP和UDP流量。iPerf3有更多的选项，如节流测试、更丰富的特性集，而Ethr支持多线程，允许扩展到1024或更高数量的连接、多个客户端到单个服务器的通信等等。对于延迟测量，它类似于Windows上的latte或Linux上的sockperf。
+
+与其他工具相比，Ethr提供了更多的测试度量，例如，它提供了对带宽、连接/s、包/s、延迟和TCP连接设置延迟的度量，所有这些都在一个工具中。在未来，还计划增加更多的特性(希望其他人也能有所贡献)以及更多的协议支持，使其成为全面的网络性能测量工具。
+
+由于golang的存在，与通过cygwin这样的抽象层进行编译相比，Ethr本质上是跨平台的，而后者可能会限制功能。它希望通过结合iPerf3、ntttcp、psping、sockperf和latte等工具的功能来统一性能度量，并提供跨多个平台和多个协议的单一工具。
 
 
-Ethr takes inspiration from existing open source network performance tools and builds upon those ideas. For Bandwidth measurement, it is similar to iPerf3, for TCP & UDP traffic. iPerf3 has many more options for doing such as throttled testing, richer feature set, while Ethr has support for multiple threads, that allows it to scale to 1024 or even higher number of connections, multiple clients communication to a single server etc. For latency measurements, it is similar to latte on Windows or sockperf on Linux.
+# 下载
 
-Ethr provides more test measurements as compared to other tools, e.g. it provides measurements for bandwidth, connections/s, packets/s, latency, and TCP connection setup latency, all in a single tool. In the future, there are plans to add more features (hoping for others to contribute) as well as more protocol support to make it a comprehensive tool for network performance measurements.
+https://github.com/karminski/ethr-kai/releases/latest
 
-Ethr is natively cross platform, thanks to golang, as compared to compiling via an abstraction layer like cygwin that may limit functionality. It hopes to unify performance measurement by combining the functionality of tools like iPerf3, ntttcp, psping, sockperf, and latte and offering a single tool across multiple platforms and multiple protocols.
 
-# Download
+# 如何测试你的网络带宽
 
-https://github.com/Microsoft/ethr/releases/latest
+本测试需要两台机器 A, B.
 
-# Installation
+使用上面的链接, 按照你的操作系统下载已经构建好的版本.
 
-Note: go version 1.11 or higher is required building it from the source.
-
-## Building from Source
-
-We use go-module to manage Ethr dependencies. for more information please check [how to use go-modules!](https://github.com/golang/go/wiki/Modules#how-to-use-modules)
+机器A:
 
 ```
-git clone https://github.com/Microsoft/ethr.git
-cd ethr
+ethr-kai -s -web
+```
+然后在你的浏览器里面打开 http://{机器A的IP地址}:8080/ 就可以看到web界面了.
+
+机器B:
+
+```
+ethr-kai -c {机器A的IP} -d {测试时间} -n {线程数量}
+```
+
+- 机器A的IP, 即机器A的IP地址.
+- 测试时间, 后面需要加时间单位, 例如 60s.
+- 线程数量, 可以随意调节以达到最佳性能, 一般是CPU有多少核心就设置多少线程.
+
+例如:
+
+```
+ethr-kai -c 192.168.1.2 -d 602 -n 4
+```
+
+这样测试开始, 就能在web界面看到图形化的测试数据了.
+
+# 安装
+
+如果想从头构建该项目, 需要 go 1.11 及以上版本.
+
+# 从源代码构建
+
+为了便捷, 我直接将第三方依赖集成到了vendor文件夹里面. 直接运行:
+
+```
+make build-with-local-vendor
+```
+
+即可构建.
+
+原始项目的构建方法为:
+
+该项目使用 go-module 管理依赖. 详情见 [how to use go-modules!](https://github.com/golang/go/wiki/Modules#how-to-use-modules)
+
+```
+git clone https://github.com/karminski/ethr-kai.git
+cd ethr-kai
 go get ./...
 go build
 ```
 
-If Ethr is cloned inside of the `$GOPATH/src` tree, please make sure you invoke the `go` command with `GO111MODULE=on`!
+如果 clone 到了 `$GOPATH/src` 里面, 请确保执行`go`命令带 `GO111MODULE=on`选项.
 
-## Docker
 
-Build image using command: 
+# 使用方法
+
+## 快速入门
+显示帮助:
 ```
-docker build -t microsoft/ethr .
-```
-
-Make binary:
-
-**Linux**
-```
-docker run -e GOOS=linux -v $(pwd):/out microsoft/ethr make build-docker
+ethr-kai -h
 ```
 
-**Windows**
-
+启动服务器端:
 ```
-docker run -e BINARY_NAME=ethr.exe -e GOOS=windows -v $(pwd):/out microsoft/ethr make build-docker
-```
-
-**OS X**
-```
-docker run -e BINARY_NAME=ethr -e GOOS=darwin -v $(pwd):/out microsoft/ethr make build-docker
+ethr-kai -s
 ```
 
-## Using go get
-
+启动带命令行界面的服务器端:
 ```
-go get github.com/Microsoft/ethr
-```
-
-## Using ArchLinux AUR
-
-Assuming you are using [`yay`](https://aur.archlinux.org/packages/yay/) (https://github.com/Jguer/yay):
-
-```
-yay -S ethr
-```
-# Publishing Nuget package
-Follow the topic Building from Source to build ethr.exe
-
-Modify ethr.nuspec to add new release version
-```
-vim ethr.nuspec
-```
-Create a nuget package(like Ethr.0.2.1.nupkg)
-```
-nuget.exe pack ethr.nuspec
-```
-Upload the package to nuget.org.
-
-# Usage
-
-## Simple Usage
-Help:
-```
-ethr -h
+ethr-kai -s -ui
 ```
 
-Server:
+启动带web界面的服务器端:
+
 ```
-ethr -s
+ethr-kai -s -web
 ```
 
-Server with Text UI:
+启动客户端:
 ```
-ethr -s -ui
-```
-
-Client:
-```
-ethr -c <server ip>
+ethr-kai -c <server ip>
 ```
 
-Examples:
+更多例子:
 ```
-// Start server
-ethr -s
+// 启动服务端
+ethr-kai -s
 
-// Start client for default (bandwidth) test measurement using 1 thread
-ethr -c localhost
+// 本地测试localhost, 1线程
+ethr-kai -c localhost
 
-// Start bandwidth test using 8 threads
-ethr -c localhost -n 8
+// 本地测试localhost, 8线程
+ethr-kai -c localhost -n 8
 
-// Start connections/s test using 64 threads
-ethr -c localhost -t c -n 64
+// 本地测试localhost, 测试项目连接数, 8线程
+ethr-kai -c localhost -t c -n 64
 ```
 
-## Complete Command Line
-### Common Parameters
+## 完整命令
 ```
+Ethr - A comprehensive network performance measurement tool.
+Version: [VERSION: UNKNOWN]
+It supports 4 modes. Usage of each mode is described below:
+
+Common Parameters
+================================================================================
 	-h 
 		Help
 	-no 
@@ -144,13 +149,15 @@ ethr -c localhost -t c -n 64
 		Use only IP v4 version
 	-6 
 		Use only IP v6 version
-```
-### Server Parameters
-```
+
+Mode: Server
+================================================================================
 	-s 
 		Run in server mode.
 	-ui 
 		Show output in text UI.
+	-web 
+		Show output and charts on http port 8080.
 	-ports <k=v,...>
 		Use custom port numbers instead of default ones.
 		A comma separated list of key=value pair is used.
@@ -160,9 +167,9 @@ ethr -c localhost -t c -n 64
 		Control is used for control channel communication for ethr.
 		Note: Same configuration must be used on both client & server.
 		Default: 'control=8888,tcp=9999,udp=9999,http=9899,https=9799'
-```
-### Client Parameters
-```
+
+Mode: Client
+================================================================================
 	-c <server>
 		Run in client mode and connect to <server>.
 		Server is specified using name, FQDN or IP address.
@@ -177,9 +184,9 @@ ethr -c localhost -t c -n 64
 		0: Equal to number of CPUs
 		Default: 1
 	-ncs 
-		No Connection Stats would be printed if this flag is specified.
-		This is useful for running with large number of connections as
-		specified by -n option.
+		No per Connection Stats would be printed if this flag is specified.
+		This is useful to suppress verbose logging when large number of
+		connections are used as specified by -n option for Bandwidth tests.
 	-l <length>
 		Length of buffer to use (format: <num>[KB | MB | GB])
 		Only valid for Bandwidth tests. Max 1GB.
@@ -187,6 +194,9 @@ ethr -c localhost -t c -n 64
 	-p <protocol>
 		Protocol ("tcp", "udp", "http", "https", or "icmp")
 		Default: tcp
+	-ic 
+		Ignore Certificate is useful for HTTPS tests, for cases where a
+		middle box like a proxy is not able to supply a valid Ethr cert.
 	-ports <k=v,...>
 		Use custom port numbers instead of default ones.
 		A comma separated list of key=value pair is used.
@@ -206,9 +216,9 @@ ethr -c localhost -t c -n 64
 	-i <iterations>
 		Number of round trip iterations for each latency measurement.
 		Default: 1000
-```
-### External Server Parameters
-```
+
+Mode: External Server
+================================================================================
 	-m <mode>
 		'-m x' MUST be specified for external mode.
 	-s 
@@ -218,9 +228,9 @@ ethr -c localhost -t c -n 64
 		A comma separated list of key=value pair is used.
 		Key specifies the protocol, and value specifies the port.
 		Default: 'tcp=9999,http=9899,https=9799'
-```
-### External Client Mode
-```
+
+Mode: External Client
+================================================================================
 	-m <mode>
 		'-m x' MUST be specified for external mode.
 	-c <destination>
@@ -236,9 +246,9 @@ ethr -c localhost -t c -n 64
 		0: Equal to number of CPUs
 		Default: 1
 	-ncs 
-		No Connection Stats would be printed if this flag is specified.
-		This is useful for running with large number of connections as
-		specified by -n option.
+		No per Connection Stats would be printed if this flag is specified.
+		This is useful to suppress verbose logging when large number of
+		connections are used as specified by -n option for Bandwidth tests.
 	-l <length>
 		Length of buffer to use (format: <num>[KB | MB | GB])
 		Only valid for Bandwidth tests. Max 1GB.
@@ -251,14 +261,15 @@ ethr -c localhost -t c -n 64
 		b: Bandwidth
 		c: Connections/s or Requests/s
 		cl: TCP connection setup latency
-		Default: b - Bandwidth measurement.
+		Default: cl - TCP connection setup latency.
 	-g <gap>
 		Time interval between successive measurements (format: <num>[ms | s | m | h]
 		0: No gap
 		Default: 1s
+
 ```
 
-# Status
+# 功能
 
 Protocol  | Bandwidth | Connections/s | Packets/s | Latency
 ------------- | ------------- | ------------- | ------------- | -------------
@@ -268,7 +279,7 @@ HTTP | Yes | No | No | Yes
 HTTPS | Yes | No | No | No
 ICMP | No | NA | No | No
 
-# Platform Support
+# 支持平台
 
 **Windows**
 
@@ -300,7 +311,7 @@ Todo list work items are shown below. Contributions are most welcome for these w
 * Support for HTTP latency and requests/s
 * Support for ICMP bandwidth, latency and packets/s
 
-# Contributing
+# 如何贡献
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
@@ -313,3 +324,4 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+

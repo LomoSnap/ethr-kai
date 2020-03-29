@@ -9,7 +9,7 @@ import "fmt"
 
 // EthrUsage prints the command-line usage text
 func EthrUsage(gVersion string) {
-	fmt.Println("\nEthr - A comprehensive network performance measurement tool.")
+	fmt.Println("\nEthr-改 (ethr-kai) - A comprehensive network performance measurement tool with web ui.")
 	fmt.Println("Version: " + gVersion)
 	fmt.Println("It supports 4 modes. Usage of each mode is described below:")
 
@@ -30,6 +30,7 @@ func EthrUsage(gVersion string) {
 	fmt.Println("================================================================================")
 	PrintServerUsage()
 	PrintFlagUsage("ui", "", "Show output in text UI.")
+	PrintFlagUsage("web", "", "Show output and charts on http port 8080.")
 	PrintPortUsage()
 
 	fmt.Println("\nMode: Client")

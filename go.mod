@@ -1,4 +1,4 @@
-module github.com/microsoft/ethr
+module github.com/microsoft/ethr-kai
 
 require (
 	github.com/mattn/go-runewidth v0.0.3

@@ -10,9 +10,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/microsoft/ethr/internal/ethrLog"
-	"github.com/microsoft/ethr/internal/stats"
-	"github.com/microsoft/ethr/utils"
+	"github.com/microsoft/ethr-kai/internal/ethrLog"
+	"github.com/microsoft/ethr-kai/internal/stats"
+	"github.com/microsoft/ethr-kai/utils"
 )
 
 type clientUI struct {

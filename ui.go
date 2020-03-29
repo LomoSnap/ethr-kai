@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/mattn/go-runewidth"
-	"github.com/microsoft/ethr/internal/stats"
+	"github.com/microsoft/ethr-kai/internal/stats"
 	tm "github.com/nsf/termbox-go"
 )
 

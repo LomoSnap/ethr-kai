@@ -36,12 +36,14 @@ var tcpBandwidthPort, tcpCpsPort, tcpPpsPort, tcpLatencyPort string
 var udpBandwidthPort, udpCpsPort, udpPpsPort, udpLatencyPort string
 var httpBandwidthPort, httpCpsPort, httpPpsPort, httpLatencyPort string
 var httpsBandwidthPort, httpsCpsPort, httpsPpsPort, httpsLatencyPort string
+var webUIPort string
 
 var ctrlBasePort = 8888
 var tcpBasePort = 9999
 var udpBasePort = 9999
 var httpBasePort = 9899
 var httpsBasePort = 9799
+var webUIBasePort = 8080
 
 func generatePortNumbers(customPortString string) {
 	portsStr := strings.ToUpper(customPortString)
@@ -64,6 +66,8 @@ func generatePortNumbers(customPortString string) {
 			httpsBasePort = p
 		case "CONTROL":
 			ctrlBasePort = p
+		case "WEBUI":
+			webUIBasePort = p
 		default:
 			ui.printErr("generatePortNumbers: ignoring unexpected key in custom ports: %s", k)
 		}
@@ -85,6 +89,7 @@ func generatePortNumbers(customPortString string) {
 	httpsCpsPort = toString(httpsBasePort - 1)
 	httpsPpsPort = toString(httpsBasePort - 2)
 	httpsLatencyPort = toString(httpsBasePort - 3)
+	webUIPort = toString(webUIBasePort)
 }
 
 const (

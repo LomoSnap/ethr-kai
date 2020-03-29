@@ -208,6 +208,7 @@ type ethrClientParam struct {
 
 type ethrServerParam struct {
 	showUI bool
+	showWEBUI bool
 }
 
 var ipVer ethrIPVer = ethrIPAny
